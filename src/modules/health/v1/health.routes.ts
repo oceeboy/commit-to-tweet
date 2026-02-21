@@ -18,7 +18,7 @@ export class HealthRoutes {
   }
 
   private setupRoutes() {
-    this.router.get('/', testMiddleware.bind(this), asyncHandler(this.healthController.checkHealth.bind(this.healthController)));
+    this.router.get('/', testMiddleware.bind(this), this.healthController.checkHealth.bind(this.healthController));
     this.router.get('/database', testMiddleware.bind(this), asyncHandler(this.healthController.checkDatabase.bind(this.healthController)));
     this.router.post(
       '/user',
