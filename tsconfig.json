@@ -1,0 +1,22 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+      "rootDir": "./src",
+      "baseUrl": "./src",
+  
+      "paths": {
+        "@/*": ["./*"],
+        "@config/*": ["./config/*"],
+        "@modules/*": ["./modules/*"],
+        "@middlewares/*": ["./middlewares/*"],
+        "@providers/*": ["./providers/*"],
+        
+        "@utils/*": ["./utils/*"],
+        "@types/*": ["./types/*"]
+      },
+  
+      "noEmit": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+  }
