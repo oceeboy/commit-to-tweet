@@ -14,9 +14,26 @@ export function verifyGithubSignature(req: Request, res: Response, next: NextFun
   const method = req.method;
   const url = req.originalUrl;
 
-  logger.debug(`[GitHubSignatureMiddleware] Verifying signature for ${method} ${url}`);
+  console.log('everything in the header', req.headers);
+  // ip address of the sender
+  const ip = req.ip;
+  logger.warn(`[GitHubSignatureMiddleware] Received request from IP: ${ip} for ${method} ${url}`);
+
+  const event = req.headers['x-github-event'];
+
+  logger.warn(`[GitHubSignatureMiddleware] Received GitHub event: ${event} for ${method} ${url}`);
+
+  // if (event !== 'ping' && event !== 'push') {
+  //   logger.warn(`[GitHubSignatureMiddleware] Ignoring unsupported event: ${event} for ${method} ${url}`);
+  //   res.status(404).json({ message: 'Event ignored' });
+  //   return;
+  // }
+
+  logger.warn(`[GitHubSignatureMiddleware] Verifying signature for ${method} ${url}`);
 
   const signatureHeader = req.headers['x-hub-signature-256'];
+
+  console.log('signatureHeader', signatureHeader);
 
   if (!signatureHeader) {
     logger.warn('[GitHubSignatureMiddleware] Missing x-hub-signature-256 header');

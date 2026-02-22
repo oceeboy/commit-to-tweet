@@ -1,6 +1,7 @@
 import logger from '../../../utils/logger';
 import { Request, Response } from 'express';
 import { GitHubService } from './github.service';
+import { th } from 'zod/v4/locales';
 
 export class GithubController {
   private readonly logger = logger;
@@ -13,6 +14,11 @@ export class GithubController {
 
   async renderPushPayload(req: Request, res: Response) {
     try {
+      const event = req.headers['x-github-event'];
+      if (event == 'ping') {
+        this.logger.info('Received GitHub ping event');
+        return res.status(200).json({ message: 'Received GitHub ping event' });
+      }
       const rawPayload = req.body.toString('utf8');
       const parsedPayload = JSON.parse(rawPayload);
       this.logger.info('GitHub push webhook received', {
