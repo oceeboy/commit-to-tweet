@@ -23,18 +23,14 @@ export class AIService {
         `;
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
-          //   {
-          //     role: 'system',
-          //     content: 'You are a helpful assistant.',
-          //   },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        max_tokens: 150,
+        temperature: 0.6,
       });
 
       this.logger.info('Generated response from OpenAI', {
