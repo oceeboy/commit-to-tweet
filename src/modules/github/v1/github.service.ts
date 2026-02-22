@@ -40,7 +40,7 @@ export class GitHubService {
       // this is where an AI integration could be added to generate a summary or social media post based on the commit messages
 
       for (const commit of commits) {
-        const post = await this.aiService.commitToPost(commit.message);
+        const post = await this.aiService.generatePostFromCommit(commit.message);
         console.log('Generated post:', post);
       }
 
