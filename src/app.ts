@@ -4,6 +4,7 @@ import { notFoundHandler } from './middlewares/not-found.middleware';
 import path from 'path';
 import fs from 'fs';
 import logger from './utils/logger';
+import { rawBodyMiddleware } from './middlewares/raw-body.middleware';
 
 /**
  * Main application class that sets up the Express server, middleware, and routes.
@@ -29,8 +30,8 @@ export default class App {
   }
 
   private setupMiddleware(): void {
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    // this.app.use(express.json());
+    // this.app.use(express.urlencoded({ extended: true }));
     logger.info('Middleware setup completed');
   }
 

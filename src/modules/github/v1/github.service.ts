@@ -1,0 +1,119 @@
+import type { GitHubPushWebhookCommitsOnly } from './github.types';
+export interface HandleResult<T = unknown> {
+  success: boolean;
+  message: string;
+  data?: T;
+  error?: string;
+}
+
+export class GitHubService {
+  constructor() {}
+
+  /**
+   * Handle GitHub push webhook
+   */
+  public async handlePush(payload: GitHubPushWebhookCommitsOnly): Promise<HandleResult<{ commitCount: number }>> {
+    try {
+      if (!payload || !payload.commits || !Array.isArray(payload.commits)) {
+        return {
+          success: false,
+          message: 'Invalid push payload',
+          error: 'Missing commits array',
+        };
+      }
+      payload.commits.forEach((commit) => {
+        console.log('Commit author:', commit.author.name, commit.author.email);
+        console.log('Commit ID:', commit.id);
+        console.log('Commit message:', commit.message);
+        console.log('Added files:', commit.added);
+        console.log('Modified files:', commit.modified);
+      });
+
+      if (payload.head_commit) {
+        console.log('Latest commit:', payload.head_commit.message);
+      }
+
+      return {
+        success: true,
+        message: 'Push event processed successfully',
+        data: {
+          commitCount: payload.commits.length,
+        },
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Failed to process push event',
+        error: error?.message ?? 'Unknown error',
+      };
+    }
+  }
+
+  public async handlePullRequest(payload: any): Promise<HandleResult> {
+    try {
+      console.log('Pull request event:', payload.action, payload.pull_request?.title);
+
+      return {
+        success: true,
+        message: 'Pull request event processed',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Failed to process pull request event',
+        error: error?.message,
+      };
+    }
+  }
+
+  public async handleIssueComment(payload: any): Promise<HandleResult> {
+    try {
+      console.log('Issue comment event:', payload.action, payload.comment?.body);
+
+      return {
+        success: true,
+        message: 'Issue comment event processed',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Failed to process issue comment event',
+        error: error?.message,
+      };
+    }
+  }
+
+  public async handleFork(payload: any): Promise<HandleResult> {
+    try {
+      console.log('Fork event:', payload.action, payload.forkee?.full_name);
+
+      return {
+        success: true,
+        message: 'Fork event processed',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Failed to process fork event',
+        error: error?.message,
+      };
+    }
+  }
+
+  public async handleStar(payload: any): Promise<HandleResult> {
+    try {
+      console.log('Star event:', payload);
+
+      return {
+        success: true,
+        message: 'Star event processed',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Failed to process star event',
+        error: error?.message,
+      };
+    }
+  }
+}

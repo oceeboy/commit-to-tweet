@@ -12,6 +12,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   PORT: z.coerce.number().int().positive(),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']),
+  GITHUB_WEBHOOK_SECRET: z.string().min(32),
 
   // Example secrets (add yours)
   JWT_SECRET: z.string().min(32),
@@ -32,7 +33,9 @@ export const config = Object.freeze({
   env: parsedEnv.data.NODE_ENV,
   port: parsedEnv.data.PORT,
   logLevel: parsedEnv.data.LOG_LEVEL,
-
+  github: {
+    webhookSecret: parsedEnv.data.GITHUB_WEBHOOK_SECRET,
+  },
   jwt: {
     secret: parsedEnv.data.JWT_SECRET,
   },

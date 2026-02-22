@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { HealthModuleV1 } from './modules/health/v1/health.module';
+import { GithubModuleV1 } from './modules/github/v1/github.module';
 
 export class AppModule {
   private readonly router: Router;
@@ -15,6 +16,7 @@ export class AppModule {
 
     // Register v1 modules here
     new HealthModuleV1(v1Router).register();
+    new GithubModuleV1(v1Router).register();
 
     this.router.use('/api/v1', v1Router);
   }
