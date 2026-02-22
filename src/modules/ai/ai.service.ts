@@ -23,7 +23,7 @@ export class AIService {
         `;
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           //   {
           //     role: 'system',
