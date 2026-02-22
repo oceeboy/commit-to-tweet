@@ -1,3 +1,4 @@
+import { AIService } from '../../../modules/ai/ai.service';
 import type { GitHubPushWebhookCommitsOnly } from './github.types';
 export interface HandleResult<T = unknown> {
   success: boolean;
@@ -7,7 +8,10 @@ export interface HandleResult<T = unknown> {
 }
 
 export class GitHubService {
-  constructor() {}
+  private readonly aiService: AIService; // Placeholder for AI integration
+  constructor() {
+    this.aiService = new AIService();
+  }
 
   /**
    * Handle GitHub push webhook
@@ -21,16 +25,23 @@ export class GitHubService {
           error: 'Missing commits array',
         };
       }
-      payload.commits.forEach((commit) => {
+      const commits = payload.commits.map((commit) => {
         console.log('Commit author:', commit.author.name, commit.author.email);
         console.log('Commit ID:', commit.id);
         console.log('Commit message:', commit.message);
         console.log('Added files:', commit.added);
         console.log('Modified files:', commit.modified);
+        return commit;
       });
 
       if (payload.head_commit) {
         console.log('Latest commit:', payload.head_commit.message);
+      }
+      // this is where an AI integration could be added to generate a summary or social media post based on the commit messages
+
+      for (const commit of commits) {
+        const post = await this.aiService.commitToPost(commit.message);
+        console.log('Generated post:', post);
       }
 
       return {

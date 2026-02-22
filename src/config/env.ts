@@ -13,6 +13,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive(),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']),
   GITHUB_WEBHOOK_SECRET: z.string().min(32),
+  OPENAI_API_KEY: z.string().min(32),
 
   // Example secrets (add yours)
   JWT_SECRET: z.string().min(32),
@@ -33,6 +34,7 @@ export const config = Object.freeze({
   env: parsedEnv.data.NODE_ENV,
   port: parsedEnv.data.PORT,
   logLevel: parsedEnv.data.LOG_LEVEL,
+
   github: {
     webhookSecret: parsedEnv.data.GITHUB_WEBHOOK_SECRET,
   },
@@ -42,6 +44,10 @@ export const config = Object.freeze({
 
   database: {
     url: parsedEnv.data.DATABASE_URL,
+  },
+
+  openai: {
+    apiKey: parsedEnv.data.OPENAI_API_KEY,
   },
 
   isProd: parsedEnv.data.NODE_ENV === 'production',
