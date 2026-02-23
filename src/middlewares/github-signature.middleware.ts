@@ -14,7 +14,6 @@ export function verifyGithubSignature(req: Request, res: Response, next: NextFun
   const method = req.method;
   const url = req.originalUrl;
 
-  console.log('everything in the header', req.headers);
   // ip address of the sender
   const ip = req.ip;
   logger.warn(`[GitHubSignatureMiddleware] Received request from IP: ${ip} for ${method} ${url}`);
@@ -32,8 +31,6 @@ export function verifyGithubSignature(req: Request, res: Response, next: NextFun
   logger.warn(`[GitHubSignatureMiddleware] Verifying signature for ${method} ${url}`);
 
   const signatureHeader = req.headers['x-hub-signature-256'];
-
-  console.log('signatureHeader', signatureHeader);
 
   if (!signatureHeader) {
     logger.warn('[GitHubSignatureMiddleware] Missing x-hub-signature-256 header');

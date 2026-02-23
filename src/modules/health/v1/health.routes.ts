@@ -3,7 +3,6 @@ import { HealthController } from './health.controller';
 import { asyncHandler } from '../../../utils/async-handler';
 import { HealthUserSchema } from './health.validator';
 
-import z from 'zod';
 import { testMiddleware, validate } from '../../../middlewares';
 
 export class HealthRoutes {
@@ -23,7 +22,6 @@ export class HealthRoutes {
     this.router.post(
       '/user',
       testMiddleware.bind(this),
-      //   validate(z.object({ id: z.coerce.number().positive() }), 'params'),
       validate(HealthUserSchema),
       asyncHandler(this.healthController.addUser.bind(this.healthController)),
     );

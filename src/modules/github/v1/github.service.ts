@@ -31,17 +31,9 @@ export class GitHubService {
         commitCount: payload.commits.length,
       });
       const commits = payload.commits.map((commit) => {
-        console.log('Commit author:', commit.author.name, commit.author.email);
-        console.log('Commit ID:', commit.id);
-        console.log('Commit message:', commit.message);
-        console.log('Added files:', commit.added);
-        console.log('Modified files:', commit.modified);
         return commit;
       });
 
-      if (payload.head_commit) {
-        console.log('Latest commit:', payload.head_commit.message);
-      }
       // this is where an AI integration could be added to generate a summary or social media post based on the commit messages
 
       for (const commit of commits) {

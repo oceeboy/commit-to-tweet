@@ -1,7 +1,6 @@
 import logger from '../../../utils/logger';
 import { Request, Response } from 'express';
 import { GitHubService } from './github.service';
-import { th } from 'zod/v4/locales';
 
 export class GithubController {
   private readonly logger = logger;
