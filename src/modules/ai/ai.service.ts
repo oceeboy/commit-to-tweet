@@ -32,15 +32,31 @@ export class AIService {
   async generatePostFromCommit(commitMessage: string) {
     const response = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        model: 'mistral',
-        prompt: `
-  Turn this GitHub commit into a short, professional update post:
-  
-  "${commitMessage}"
-        `,
-        stream: false,
+        model: 'gemma3',
+        prompt: `You are a professional content writer. Rewrite the following Git commit message into a polished, concise, and informative update message. 
+
+Requirements:
+- Maintain the meaning of the commit.
+- Use a professional and engaging tone.
+- Include enough detail for someone to understand the change.
+- Keep sentences clear and well-structured.
+- Provide the message in **plain text**, no hashtags, no emojis.
+- Limit to a maximum of 240 characters.
+- no need to mention that this is a commit message or use the word "commit" in the output.
+- Provide 1 version of the rewritten message.
+- max characters in the output should be 240 characters. 
+Git Commit Message:
+        ${commitMessage}`,
+
+        options: {
+          temperature: 0.3, // deterministic
+          num_predict: 60, // limit generation length
+        },
+        stream: false, // to make this true you have to use chunks
       }),
     });
     this.logger.info('Received response from local AI service', {
@@ -48,7 +64,20 @@ export class AIService {
       statusText: response.statusText,
     });
 
-    const data = await response.json();
-    return data || `Generated post for commit: "${commitMessage}"`; // Fallback response
+    const data = (await response.json()) as {
+      model: string;
+      created_at: string;
+      response: string;
+      done: boolean;
+      done_reason: string;
+      context: number[];
+      total_duration: number;
+      load_duration: number;
+      prompt_eval_count: number;
+      prompt_eval_duration: number;
+      eval_count: number;
+      eval_duration: number;
+    };
+    return data.response || `Generated post for commit: "${commitMessage}"`; // Fallback response
   }
 }

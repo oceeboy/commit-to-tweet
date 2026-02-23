@@ -21,19 +21,35 @@ export class HealthController {
     try {
       // start time for AI health check
       const startTime = Date.now();
-      this.logger.info('Starting AI health check', {
-        timestamp: startTime,
-      });
 
+      const commitMessage = 'feat: refactor AI service to use new post generation method and update Docker setup';
       const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gemma3:latest',
-          prompt: 'Respond **only** with "AI_OK"',
-          stream: false,
+          model: 'gemma3',
+          prompt: `You are a professional content writer. Rewrite the following Git commit message into a polished, concise, and informative update message. 
+
+Requirements:
+- Maintain the meaning of the commit.
+- Use a professional and engaging tone.
+- Include enough detail for someone to understand the change.
+- Keep sentences clear and well-structured.
+- Provide the message in **plain text**, no hashtags, no emojis.
+- Limit to a maximum of 240 characters.
+- no need to mention that this is a commit message or use the word "commit" in the output.
+- Provide 1 version of the rewritten message.
+- max characters in the output should be 240 characters. 
+Git Commit Message:
+          ${commitMessage}`,
+
+          options: {
+            temperature: 0.3, // deterministic
+            num_predict: 60, // limit generation length
+          },
+          stream: false, // to make this true you have to use chunks
         }),
       });
 
@@ -58,11 +74,8 @@ export class HealthController {
       console.log('AI health check response data:', data);
 
       const reply = data?.response || 'No response from AI';
-
-      this.logger.info('Completed AI health check', {
-        timestamp: Date.now(),
-        duration: Date.now() - startTime,
-      });
+      const duration = Date.now() - startTime;
+      console.log('AI total duration (ms):', duration);
       res.status(200).json({
         status: 'ok',
         message: 'Health check successful',
