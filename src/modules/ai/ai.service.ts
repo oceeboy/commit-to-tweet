@@ -43,6 +43,10 @@ export class AIService {
         stream: false,
       }),
     });
+    this.logger.info('Received response from local AI service', {
+      status: response.status,
+      statusText: response.statusText,
+    });
 
     const data = await response.json();
     return data || `Generated post for commit: "${commitMessage}"`; // Fallback response

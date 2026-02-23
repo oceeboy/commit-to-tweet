@@ -1,19 +1,86 @@
 import { Request, Response } from 'express';
 import type { HealthUserInput } from './health.types';
 import { HealthService } from './health.service';
+import logger from '../../../utils/logger';
 
 export class HealthController {
   private readonly healthService: HealthService;
+  private readonly logger = logger;
 
   constructor() {
     this.healthService = new HealthService();
   }
 
-  public checkHealth = (_req: Request, res: Response): void => {
-    res.status(200).json({
-      status: 'ok',
-      message: 'Health check successful',
-    });
+  /**
+   * Checks the health of the AI service.
+   * @param _req The request object.
+   * @param res The response object.
+   * This method sends a test prompt to the AI service and checks if it responds correctly.
+   */
+  public checkHealth = async (_req: Request, res: Response) => {
+    try {
+      // start time for AI health check
+      const startTime = Date.now();
+      this.logger.info('Starting AI health check', {
+        timestamp: startTime,
+      });
+
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gemma3:latest',
+          prompt: 'Respond **only** with "AI_OK"',
+          stream: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ollama generate failed with status ${response.status}`);
+      }
+
+      const data = (await response.json()) as {
+        model: string;
+        created_at: string;
+        response: string;
+        done: boolean;
+        done_reason: string;
+        context: number[];
+        total_duration: number;
+        load_duration: number;
+        prompt_eval_count: number;
+        prompt_eval_duration: number;
+        eval_count: number;
+        eval_duration: number;
+      };
+      console.log('AI health check response data:', data);
+
+      const reply = data?.response || 'No response from AI';
+
+      this.logger.info('Completed AI health check', {
+        timestamp: Date.now(),
+        duration: Date.now() - startTime,
+      });
+      res.status(200).json({
+        status: 'ok',
+        message: 'Health check successful',
+        data: {
+          ai: reply,
+        },
+      });
+    } catch (error: any) {
+      this.logger.error('Health AI check failed', {
+        message: error?.message,
+        stack: error?.stack,
+      });
+
+      res.status(500).json({
+        status: 'error',
+        message: 'AI service unavailable',
+      });
+    }
   };
 
   public addUser = async (req: Request, res: Response): Promise<void> => {
